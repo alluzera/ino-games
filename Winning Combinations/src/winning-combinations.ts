@@ -23,31 +23,32 @@ const combinatorConfig: CombinatorConfig = {
 };
 
 function call(lines: number[]): WinningCombinationsResult {
-  let symbol;
-  let sequence;
-  let symbolIndex = [];
-  let result = [];
+  let symbol: number | undefined;
+  let sequence: number = 0;
+  const symbolIndex: Array<number> = [];
+  const result: [number, number[]][] = [];
 
   for (let i = 0; i < lines.length; i++) {
     if (lines[i] < combinatorConfig.nonPayingSymbols[0]) {
-      if (([...new Set(lines.slice(i, i + 3).filter(e => e !== 0))].length === 1 || (lines.slice(i, i + 3).reduce((pV, cV)=> pV + cV) === 0)) && i + 2 < lines.length) {
-        symbol = lines.slice(i, i + 3).find(e => e !== 0);
-        sequence = combinatorConfig.minToSequence;
-        if (lines.slice(i, i + 4).filter(e => e !== 0).every(e => e === lines[i + 3] || lines[i + 3] === 0) && i + 3 < lines.length) {
-          symbol = lines.slice(i, i + 4).find(e => e !== 0);
-          sequence++;
-          if (lines.slice(i, i + 5).filter(e => e !== 0).every(e => e === lines[i + 4] || lines[i + 4] === 0) && i + 4 < lines.length) {
-            symbol = lines.slice(i, i + 5).find(e => e !== 0);
+      if (lines[i] !== symbol) {
+        if (([...new Set(lines.slice(i, i + 3).filter(e => e !== 0))].length === 1 || (lines.slice(i, i + 3).reduce((pV, cV)=> pV + cV) === 0)) && i + 2 < lines.length) {
+          symbol = lines.slice(i, i + 3).find(e => e !== 0);
+          sequence = combinatorConfig.minToSequence;
+          if (lines.slice(i, i + 4).filter(e => e !== 0).every(e => e === lines[i + 3] || lines[i + 3] === 0) && i + 3 < lines.length) {
+            symbol = lines.slice(i, i + 4).find(e => e !== 0);
             sequence++;
-            if (lines.slice(i).filter(e => e !== 0).every(e => e === lines[i + 5] || lines[i + 5] === 0) && i + 5 < lines.length) {
-              symbol = lines.slice(i).find(e => e !== 0);
+            if (lines.slice(i, i + 5).filter(e => e !== 0).every(e => e === lines[i + 4] || lines[i + 4] === 0) && i + 4 < lines.length) {
+              symbol = lines.slice(i, i + 5).find(e => e !== 0);
               sequence++;
+              if (lines.slice(i).filter(e => e !== 0).every(e => e === lines[i + 5] || lines[i + 5] === 0) && i + 5 < lines.length) {
+                symbol = lines.slice(i).find(e => e !== 0);
+                sequence++;
+              }
             }
           }
         }
       }
     }
-
     if (sequence) {
       for (let j = 0; j < sequence; j++) {
         symbolIndex[j] = i + j;
@@ -55,11 +56,10 @@ function call(lines: number[]): WinningCombinationsResult {
       if (!symbol) {
         symbol = 0;
       }
-      result.push(symbol, symbolIndex)
+      result.push([symbol, [...symbolIndex]]);
       if (sequence + i === lines.length) {
         break;
       }
-      // i = lines.indexOf(lines.find( e => e !== symbol))
       sequence = 0;
     }
   }
@@ -67,11 +67,3 @@ function call(lines: number[]): WinningCombinationsResult {
 }
 
 export const WinningCombinations = { call };
-
-
-// Inputs que ainda to tendo problema
-// [3, 3, 3, 8, 8, 8]; Quando tem dois symbols com pay line, o index da primeira pay line é substituido pelo da segunda pay line
-// [2, 2, 0, 0, 3, 3]; Nesse caso aqui, eu consegui resolver com a linha 62, só que ela causa problema pro input da linha 75
-// [1, 2, 0, 0, 3, 3];
-
-

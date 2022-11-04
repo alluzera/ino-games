@@ -22,26 +22,48 @@ const combinatorConfig: CombinatorConfig = {
   nonPayingSymbols: [10, 11, 12, 13, 14, 15],
 };
 
+/**
+ * This functin check if the next symbol is valid for the actual sequence of symbols.
+ * This function receives an array relative to the slot machine input, and two indexs.
+ * @param lines The actual Array of numbers on input the slot machine.
+ * @param idx Index of the slot machine input that is being tested.
+ * @param nextIndex Index that limit the size of the sample of the input to be a valid sequence.
+ * @returns number representing the symbol for the actual sequence.
+ */
+function checkNextSymbol(lines: number[], idx: number, nextIndex: number): boolean {
+  const nextSymbols = lines.slice(idx, idx + nextIndex + 1);
+  const currentSymbol = lines[idx + nextIndex];
+
+  return (nextSymbols.filter(e => e !== 0).every(e => e === currentSymbol || currentSymbol === 0) && idx + nextIndex < lines.length);
+}
+
 function call(lines: number[]): WinningCombinationsResult {
+  const result: WinningCombinationsResult = [];
+  const symbolIndex: Array<number> = [];
   let symbol: number | undefined;
   let sequence: number = 0;
-  const symbolIndex: Array<number> = [];
-  const result: [number, number[]][] = [];
 
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i] < combinatorConfig.nonPayingSymbols[0]) {
-      if (lines[i] !== symbol) {
-        if (([...new Set(lines.slice(i, i + 3).filter(e => e !== 0))].length === 1 || (lines.slice(i, i + 3).reduce((pV, cV)=> pV + cV) === 0)) && i + 2 < lines.length) {
-          symbol = lines.slice(i, i + 3).find(e => e !== 0);
+    const line = lines[i];
+
+    if (line < combinatorConfig.nonPayingSymbols[0]) {
+      if (line !== symbol) {
+        const currentSymbols = lines.slice(i, i + 3);
+        const currentSequence = new Set(currentSymbols.filter(e => e !== combinatorConfig.wildSymbol));
+        const symbolsSum = currentSymbols.reduce((pV, cV)=> pV + cV);
+
+        if ((currentSequence.size === 1 || symbolsSum === 0) && i + 2 < lines.length) {
+          symbol = currentSymbols.find(e => e !== combinatorConfig.wildSymbol);
           sequence = combinatorConfig.minToSequence;
-          if (lines.slice(i, i + 4).filter(e => e !== 0).every(e => e === lines[i + 3] || lines[i + 3] === 0) && i + 3 < lines.length) {
-            symbol = lines.slice(i, i + 4).find(e => e !== 0);
+
+          if (checkNextSymbol(lines, i, sequence)) {
+            symbol = lines.slice(i, i + 4).find(e => e !== combinatorConfig.wildSymbol);
             sequence++;
-            if (lines.slice(i, i + 5).filter(e => e !== 0).every(e => e === lines[i + 4] || lines[i + 4] === 0) && i + 4 < lines.length) {
-              symbol = lines.slice(i, i + 5).find(e => e !== 0);
+            if (checkNextSymbol(lines, i, sequence)) {
+              symbol = lines.slice(i, i + 5).find(e => e !== combinatorConfig.wildSymbol);
               sequence++;
-              if (lines.slice(i).filter(e => e !== 0).every(e => e === lines[i + 5] || lines[i + 5] === 0) && i + 5 < lines.length) {
-                symbol = lines.slice(i).find(e => e !== 0);
+              if (checkNextSymbol(lines, i, sequence)) {
+                symbol = lines.slice(i).find(e => e !== combinatorConfig.wildSymbol);
                 sequence++;
               }
             }
@@ -54,7 +76,7 @@ function call(lines: number[]): WinningCombinationsResult {
         symbolIndex[j] = i + j;
       }
       if (!symbol) {
-        symbol = 0;
+        symbol = combinatorConfig.wildSymbol;
       }
       result.push([symbol, [...symbolIndex]]);
       if (sequence + i === lines.length) {

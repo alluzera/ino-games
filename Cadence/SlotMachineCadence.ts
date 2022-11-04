@@ -81,7 +81,7 @@ const slotMachineCadences: RoundsCadences = { roundOne: [], roundTwo: [], roundT
  * @returns SlotCadence Array of numbers representing the slot machine stop cadence.
  */
 function slotCadence(symbols: Array<SlotCoordinate>): SlotCadence {
-  let cadenceResult = [];
+  const cadenceResult: SlotCadence = [];
   let symbolCounter = 0;
   let currentCadence = anticipatorConfig.defaultCadence;
 
@@ -99,7 +99,7 @@ function slotCadence(symbols: Array<SlotCoordinate>): SlotCadence {
         }
       }
     }
-    if (i) {
+    if (i > 0) {
       cadenceResult[i] = cadenceResult[i - 1] + currentCadence;
     } else {
       cadenceResult[i] = 0;

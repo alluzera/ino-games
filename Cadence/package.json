@@ -1,0 +1,15 @@
+{
+  "name": "cadence",
+  "version": "1.0.0",
+  "description": "1. **Working on the code from this folder** 2. Implement a function to solve a game need: **slot machine cadence**. 3. The capacity to understand written code and new tech. You can improve what is already written. 4. **Clean and commented code**. Feel free to comment the existing code - it will be useful in understanding how it works.",
+  "main": "SlotMachineCadence.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node SlotMachineCadence.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ts-node": "^10.9.1"
+  }
+}
